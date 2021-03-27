@@ -13,8 +13,8 @@ def test_all():
 def publish(test:bool=False):
     source()
     wheel()
-    publish_pypi(test)
     publish_github(test)
+    publish_pypi(test)
     clean()
 
 with open("README.md", 'r') as f:
