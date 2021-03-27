@@ -49,6 +49,7 @@ def publish_github(test:bool=False):
                       *[join('dist',file) for file in listdir('dist')])
     if test:
         gh.release.delete(version)
+        git.push('origin',version,delete=True)
 
 @command
 def publish_pypi(test:bool=False):
