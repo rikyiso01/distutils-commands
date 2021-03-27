@@ -40,8 +40,11 @@ def publish_github(test:bool=False):
     print(version)
     changelog:str=input('Write the changelog:')
     git.add('.')
-    git.commit(m=changelog)
-    git.push()
+    try:
+        git.commit(m=changelog)
+        git.push()
+    except OSError:
+        pass
     gh.release.create(version,prerelease=version<'1.0',notes=changelog,title=f'V{version}',
                       *[join('dist',file) for file in listdir('dist')])
     if test:
