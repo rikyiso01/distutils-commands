@@ -1,4 +1,0 @@
-wheel
-pytest
-linux-commands
-twine

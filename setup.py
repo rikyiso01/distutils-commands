@@ -2,10 +2,6 @@ from setuptools import setup,find_packages
 from distutils_commands import command,pytest,clean,publish_pypi,wheel,source,publish_github
 
 @command
-def publish():
-    pass
-
-@command
 def test_all():
     pytest('main.py')
 
@@ -28,8 +24,16 @@ setup(
     long_description=long_description,
     author='Riccardo Isola',
     author_email='riky.isola@gmail.com',
-    url="https://github.com/RikyIsola/python-matrix-tuple",
+    url="https://github.com/RikyIsola/distutils-commands",
     packages=find_packages(),
     install_requires=['pytest','linux-commands','twine','wheel'],
-    cmdclass={'publish':publish,'test':test_all,'clean':clean}
+    cmdclass={'publish':publish,'test':test_all,'clean':clean},
+    classifiers=['Development Status :: 4 - Beta',
+                 'Intended Audience :: Developers',
+                 'Topic :: Software Development :: Build Tools',
+                 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+                 'Programming Language :: Python :: 3.9'],
+    keywords='distutils setuptools commands',
+    python_requires='>=3.9',
+    project_urls={'Tracker':'https://github.com/RikyIsola/distutils-commands/issues'}
 )
