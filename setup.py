@@ -18,6 +18,7 @@ setup(
     description='A simpler way to use distutils commands',
     license="GPL-3",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Riccardo Isola',
     author_email='riky.isola@gmail.com',
     url="https://github.com/RikyIsola/distutils-commands",
