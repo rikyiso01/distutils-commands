@@ -14,7 +14,7 @@ with open("README.md", 'r') as f:
 
 setup(
     name='distutils-commands',
-    version='1.2',
+    version='1.3',
     description='A simpler way to use distutils commands',
     license="GPL-3",
     long_description=long_description,
