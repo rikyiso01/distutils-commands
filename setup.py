@@ -1,9 +1,5 @@
 from setuptools import setup,find_packages
-from distutils_commands import command,pytest,clean,publish_pypi,wheel,source,publish_github
-
-@command
-def test_all():
-    pytest('main.py')
+from distutils_commands import command,clean,publish_pypi,wheel,source,publish_github
 
 @command
 def publish(test:bool=False):
@@ -27,7 +23,7 @@ setup(
     url="https://github.com/RikyIsola/distutils-commands",
     packages=find_packages(),
     install_requires=['pytest','linux-commands','twine','wheel'],
-    cmdclass={'publish':publish,'test':test_all,'clean':clean},
+    cmdclass={'publish':publish,'clean':clean},
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
                  'Topic :: Software Development :: Build Tools',
