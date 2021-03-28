@@ -3,7 +3,7 @@ A simpler way to use distutils commands
 
 ## Installation
 
-You can install it from [Pypi](https://pypi.org/project/distutils-commands/1.1/) or from the
+You can install it from [Pypi](https://pypi.org/project/distutils-commands) or from the
 [release section](https://github.com/RikyIsola/distutils-commands/releases)
 
 ## Usage
