@@ -60,6 +60,7 @@ def publish_pypi(test:bool=False):
     if test:
         argv.append('--repository')
         argv.append('testpypi')
+    argv.append('--verbose')
     argv.extend([join('dist',file) for file in listdir('dist')])
     twine()
     argv.clear()
