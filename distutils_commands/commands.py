@@ -38,7 +38,7 @@ def publish_github(test:bool=False):
     version=version[version.find('version=')+9:]
     version=version[:version.find(',')-1]
     print(version)
-    changelog:str=input('Write the changelog:')
+    changelog:str=input('Write the changelog: ')
     git.add('.')
     try:
         git.commit(m=changelog)
