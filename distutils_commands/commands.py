@@ -94,7 +94,7 @@ def publish_pypi(test:bool=False):
     argv.extend([join('dist',file) for file in listdir('dist') if version in file])
     result=twine()
     if result is not None:
-        raise Exception(result)
+        raise FileExistsError('This version is already published on Pypi')
     argv.clear()
     argv.extend(backup)
 
