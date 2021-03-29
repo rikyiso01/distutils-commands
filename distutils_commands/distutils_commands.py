@@ -31,7 +31,8 @@ def generate_command(name:str,function:Callable)->Callable:
     specs=getfullargspec(function)
 
     class Result(Command):
-        user_options=[(arg.replace('_','-')+'=',None,function.__doc__) for arg in specs.args]
+        description=function.__doc__
+        user_options=[(arg.replace('_','-')+'=',None,None) for arg in specs.args]
 
         def __init__(self,*args):
             if len(args)>0 and isinstance(args[0],Distribution):

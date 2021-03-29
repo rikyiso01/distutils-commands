@@ -8,6 +8,7 @@ from typing import Literal
 
 @command('clean')
 def clean():
+    """clean the working dir"""
     if exists('.pytest_cache'):
         rmtree('.pytest_cache')
     if exists('build'):
@@ -21,6 +22,7 @@ def clean():
 
 @command('pdoc')
 def pdoc(module:str,docformat:Literal["google","numpy","restructuredtext"]='google',output_dir:str='docs'):
+    """generate a pdoc documentation"""
     try:
         from pdoc.render import configure
         from pdoc import pdoc
@@ -31,6 +33,7 @@ def pdoc(module:str,docformat:Literal["google","numpy","restructuredtext"]='goog
 
 @command('pytest')
 def pytest(file:str):
+    """run tests with pytest"""
     try:
         from pytest import main as pytest_main
     except ImportError:
@@ -39,6 +42,7 @@ def pytest(file:str):
 
 @command('wheel')
 def wheel():
+    """build the wheel"""
     try:
         import wheel
     except ImportError:
@@ -47,6 +51,7 @@ def wheel():
 
 @command('source')
 def source():
+    """create the tar.gz"""
     sdist()
 
 def get_version()->str:
@@ -57,6 +62,7 @@ def get_version()->str:
 
 @command('publish-github')
 def publish_github(changelog:str,test:bool=False):
+    """publish the release on Github"""
     try:
         from linux_commands import gh,git
     except ImportError:
@@ -70,7 +76,7 @@ def publish_github(changelog:str,test:bool=False):
         pass
     try:
         gh.release.create(version,prerelease=version<'1.0',notes=changelog,title=f'v{version}',
-                          *[join('dist',file) for file in listdir('dist')])
+                          *[join('dist',file) for file in listdir('dist') if version in file])
     except OSError:
         raise FileExistsError('This version is already published on github')
     if test:
@@ -79,6 +85,7 @@ def publish_github(changelog:str,test:bool=False):
 
 @command('publish-pypi')
 def publish_pypi(test:bool=False):
+    """publish the release on Pypi"""
     try:
         from twine.__main__ import main as twine
     except ImportError:
@@ -99,4 +106,5 @@ def publish_pypi(test:bool=False):
     argv.extend(backup)
 
 def import_exception(name:str)->ImportError:
-    return ImportError(f'{name} extension dependencies not installed')
+    return ImportError(f'{name} extension dependencies not installed, '
+                       f'you can install it with "pip install linux-commands[{name}]"')
