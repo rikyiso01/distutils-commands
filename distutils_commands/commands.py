@@ -61,8 +61,6 @@ def publish_github(test:bool=False):
     except ImportError:
         raise import_exception('github')
     version=get_version()
-    if version in git.tag():
-        raise FileExistsError('This version is already published on github')
     changelog:str=input('Write the changelog: ')
     git.add('.')
     try:
@@ -70,8 +68,11 @@ def publish_github(test:bool=False):
         git.push()
     except OSError:
         pass
-    gh.release.create(version,prerelease=version<'1.0',notes=changelog,title=f'v{version}',
-                      *[join('dist',file) for file in listdir('dist')])
+    try:
+        gh.release.create(version,prerelease=version<'1.0',notes=changelog,title=f'v{version}',
+                          *[join('dist',file) for file in listdir('dist')])
+    except OSError:
+        raise FileExistsError('This version is already published on github')
     if test:
         gh.release.delete(version)
         git.push('origin',version,delete=True)
