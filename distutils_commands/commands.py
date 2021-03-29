@@ -1,11 +1,12 @@
-from .distutils_command import bdist_wheel,sdist,command
+from .distutils_commands import bdist_wheel,sdist,command
 from os import listdir
 from os.path import exists,join
 from shutil import rmtree
 from sys import argv
 from pathlib import Path
+from typing import Literal
 
-@command
+@command('clean')
 def clean():
     if exists('.pytest_cache'):
         rmtree('.pytest_cache')
@@ -18,17 +19,17 @@ def clean():
     if exists('temp'):
         rmtree('temp')
 
-@command
-def pdoc():
+@command('pdoc')
+def pdoc(module:str,docformat:Literal["google","numpy","restructuredtext"]='google',output_dir:str='docs'):
     try:
         from pdoc.render import configure
         from pdoc import pdoc
     except ImportError:
         raise import_exception('pdoc')
-    configure(docformat='google')
-    pdoc('matrix',output_directory=Path('docs'))
+    configure(docformat=docformat)
+    pdoc(module,output_directory=Path(output_dir))
 
-@command
+@command('pytest')
 def pytest(file:str):
     try:
         from pytest import main as pytest_main
@@ -36,7 +37,7 @@ def pytest(file:str):
         raise import_exception('pytest')
     pytest_main([file])
 
-@command
+@command('wheel')
 def wheel():
     try:
         import wheel
@@ -44,7 +45,7 @@ def wheel():
         raise import_exception('wheel')
     bdist_wheel()
 
-@command
+@command('source')
 def source():
     sdist()
 
@@ -54,14 +55,13 @@ def get_version()->str:
     version=version[:version.find(',')-1]
     return version
 
-@command
-def publish_github(test:bool=False):
+@command('publish-github')
+def publish_github(changelog:str,test:bool=False):
     try:
         from linux_commands import gh,git
     except ImportError:
         raise import_exception('github')
     version=get_version()
-    changelog:str=input('Write the changelog: ')
     git.add('.')
     try:
         git.commit(m=changelog)
@@ -77,7 +77,7 @@ def publish_github(test:bool=False):
         gh.release.delete(version)
         git.push('origin',version,delete=True)
 
-@command
+@command('publish-pypi')
 def publish_pypi(test:bool=False):
     try:
         from twine.__main__ import main as twine

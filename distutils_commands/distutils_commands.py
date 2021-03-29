@@ -4,12 +4,34 @@ from typing import Callable,Type
 from setuptools.sandbox import run_setup
 from functools import partial
 from inspect import getfullargspec
+from sys import argv
 
-def command(function:Callable)->Type[Command]:
+commands:dict[str,Type[Command]]={}
+
+def get_cmdclass():
+    return commands.copy()
+
+def convert_argv(program:str):
+    start=False
+    for a in range(len(argv)):
+        if argv[a]==program:
+            start=True
+        elif start:
+            if argv[a].startswith('-'):
+                if '=' not in argv[a]:
+                    argv[a]+='=True'
+            else:
+                start=False
+
+def command(name:str)->Callable[[Callable],Type[Command]]:
+    return partial(generate_command,name)
+
+def generate_command(name:str,function:Callable)->Callable:
+    convert_argv(name)
     specs=getfullargspec(function)
 
     class Result(Command):
-        user_options=[(arg.replace('_','-'),None,None) for arg in specs.args]
+        user_options=[(arg.replace('_','-')+'=',None,function.__doc__) for arg in specs.args]
 
         def __init__(self,*args):
             if len(args)>0 and isinstance(args[0],Distribution):
@@ -23,15 +45,19 @@ def command(function:Callable)->Type[Command]:
 
         def initialize_options(self) -> None:
             defaults=len(specs.defaults) if specs.defaults is not None else 0
-            for a in range(defaults):
-                setattr(self,specs.args[-(defaults+a)],specs.defaults[a-defaults])
+            for a in range(len(specs.args)):
+                value=None
+                if a>=len(specs.args)-defaults:
+                    value=specs.defaults[a-len(specs.args)+defaults]
+                setattr(self,specs.args[a],value)
 
         def finalize_options(self) -> None:
             for arg in specs.args:
-                assert hasattr(self,arg),f'Missing required option: {arg}'
+                assert getattr(self,arg) is not None,f'Missing required option: {arg}'
 
         def run(self) -> None:
             function(**{arg:getattr(self,arg) for arg in specs.args})
+    commands[name]=Result
     return Result
 
 def call(name:str):

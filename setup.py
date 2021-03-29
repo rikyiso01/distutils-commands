@@ -1,11 +1,11 @@
 from setuptools import setup,find_packages
-from distutils_commands import command,clean,publish_pypi,wheel,source,publish_github
+from distutils_commands import command,clean,publish_pypi,wheel,source,publish_github,get_cmdclass
 
-@command
-def publish(test:bool=False):
+@command('publish')
+def publish(changelog:str,test:bool=False):
     source()
     wheel()
-    publish_github(test)
+    publish_github(changelog,test)
     publish_pypi(test)
     clean()
 
@@ -14,7 +14,7 @@ with open("README.md", 'r') as f:
 
 setup(
     name='distutils-commands',
-    version='1.4.1',
+    version='1.4.2',
     description='A simpler way to use distutils commands',
     license="GPL-3",
     long_description=long_description,
@@ -25,7 +25,7 @@ setup(
     packages=find_packages(),
     setup_requires=['linux-commands','twine','wheel'],
     extras_require={'pytest':'pytest','github':'linux-commands','pypi':'twine','wheel':'wheel','pdoc':'pdoc'},
-    cmdclass={'publish':publish,'clean':clean},
+    cmdclass=get_cmdclass(),
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
                  'Topic :: Software Development :: Build Tools',
