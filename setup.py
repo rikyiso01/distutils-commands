@@ -20,7 +20,7 @@ with open("README.md", 'r') as f:
 
 setup(
     name='distutils-commands',
-    version='1.5',
+    version='1.5.1',
     description='A simpler way to use distutils commands',
     license="GPL-3",
     long_description=long_description,
@@ -29,8 +29,8 @@ setup(
     author_email='riky.isola@gmail.com',
     url="https://github.com/RikyIsola/distutils-commands",
     packages=find_packages(),
-    setup_requires=['twine','wheel','pytest'],
-    extras_require={'pytest':'pytest','pypi':'twine','wheel':'wheel','pdoc':'pdoc'},
+    setup_requires=['twine>=3.4.1','wheel>=0.36.2','pytest>=6.2.2'],
+    extras_require={'pytest':'pytest>=6.2.2','pypi':'twine>=3.4.1','wheel':'wheel>=0.36.2','pdoc':'pdoc>=6.4.2'},
     cmdclass=get_cmdclass(),
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
