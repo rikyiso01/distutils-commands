@@ -4,7 +4,7 @@ from os.path import exists,join
 from shutil import rmtree
 from sys import argv
 from pathlib import Path
-from typing import Literal
+from subprocess import run,CalledProcessError
 
 @command('clean')
 def clean():
@@ -21,13 +21,14 @@ def clean():
         rmtree('temp')
 
 @command('pdoc')
-def pdoc(module:str,docformat:Literal["google","numpy","restructuredtext"]='google',output_dir:str='docs'):
+def pdoc(module:str,docformat:str='google',output_dir:str='docs'):
     """generate a pdoc documentation"""
     try:
         from pdoc.render import configure
-        from pdoc import pdoc
+        from pdoc import pdoc,Literal
     except ImportError:
         raise import_exception('pdoc')
+    docformat:Literal['google']
     configure(docformat=docformat)
     pdoc(module,output_directory=Path(output_dir))
 
@@ -61,30 +62,28 @@ def get_version()->str:
     return version
 
 @command('publish-github')
-def publish_github(changelog:str,test:bool=False):
+def publish_github(changelog:str,test:bool=False,version:str=''):
     """publish the release on Github"""
-    try:
-        from linux_commands import gh,git
-    except ImportError:
-        raise import_exception('github')
-    version=get_version()
-    git.add('.')
-    try:
-        git.commit(m=changelog)
-        git.push()
-    except OSError:
-        pass
-    try:
-        gh.release.create(version,prerelease=version<'1.0',notes=changelog,title=f'v{version}',
-                          *[join('dist',file) for file in listdir('dist') if version in file])
-    except OSError:
+    if version=='':
+        version=get_version()
+    if not test:
+        run(['git','add','.'],check=True)
+        try:
+            run(['git','commit','-m',changelog],check=True)
+            run(['git','push'],check=True)
+        except CalledProcessError:
+            pass
+    print(*[join('dist',file) for file in listdir('dist') if version in file])
+    process=run(['gh','release','create',version,*(['--prerelease'] if version<'1.0' else []),'--notes',changelog,
+                 '--title',f'v{version}',*[join('dist',file) for file in listdir('dist') if version in file]])
+    if process.returncode!=0:
         raise FileExistsError('This version is already published on github')
     if test:
-        gh.release.delete(version)
-        git.push('origin',version,delete=True)
+        run(['gh','release','delete',version],check=True)
+        run(['git','push','--delete','origin',version],check=True)
 
 @command('publish-pypi')
-def publish_pypi(test:bool=False):
+def publish_pypi(test:bool=False,version:str=''):
     """publish the release on Pypi"""
     try:
         from twine.__main__ import main as twine
@@ -97,10 +96,12 @@ def publish_pypi(test:bool=False):
     if test:
         argv.append('--repository')
         argv.append('testpypi')
-    version=get_version()
+    if version=='':
+        version=get_version()
     argv.extend([join('dist',file) for file in listdir('dist') if version in file])
     result=twine()
     if result is not None:
+        print(result)
         raise FileExistsError('This version is already published on Pypi')
     argv.clear()
     argv.extend(backup)

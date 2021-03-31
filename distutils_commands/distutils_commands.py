@@ -1,12 +1,12 @@
 from distutils.cmd import Command
 from distutils.dist import Distribution
-from typing import Callable,Type
+from typing import Callable,Type,Dict
 from setuptools.sandbox import run_setup
 from functools import partial
 from inspect import getfullargspec
 from sys import argv
 
-commands:dict[str,Type[Command]]={}
+commands:Dict[str,Type[Command]]={}
 
 def get_cmdclass():
     return commands.copy()
