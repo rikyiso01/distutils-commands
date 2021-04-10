@@ -63,3 +63,4 @@ from distutils_commands import clean,pytest,wheel,source,publish_github,publish_
 - publish_github: use the github command line program that you need to have installed, to create a release
 - publish_pypi: use twine to upload the project to pypi
 - pdoc: use pdoc to generate the documentation
+- local_install: locally install the package using pip and wheel

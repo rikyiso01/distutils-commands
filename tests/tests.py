@@ -1,8 +1,11 @@
-from distutils_commands import command,wheel,publish_github,publish_pypi,source,clean,pdoc,pytest,get_cmdclass
+from distutils_commands import command,wheel,publish_github,publish_pypi,source,clean,pdoc,pytest,get_cmdclass,\
+    local_install
 from shutil import rmtree
 from pytest import raises
 from random import randint
 from os import rename,listdir
+from sys import executable
+from subprocess import run,PIPE
 
 def test_clean():
     clean()
@@ -36,6 +39,12 @@ def test_publish_pypi():
     spoof_version(version)
     publish_pypi(True,version)
     clean()
+
+def test_local_install():
+    local_install()
+    assert 'distutils-commands' in run([executable,'-m','pip','freeze'],stdout=PIPE,check=True,text=True).stdout
+    run([executable,'-m','pip','uninstall','-y','distutils-commands'],check=True)
+
 
 def test_get_cmdclass():
     assert len(get_cmdclass())>0

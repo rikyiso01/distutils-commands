@@ -1,10 +1,23 @@
 from .distutils_commands import bdist_wheel,sdist,command
-from os import listdir
+from os import listdir,environ,getcwd
 from os.path import exists,join
 from shutil import rmtree
-from sys import argv
+from sys import argv,executable
 from pathlib import Path
 from subprocess import run,CalledProcessError
+
+@command('local_install')
+def local_install():
+    """Locally install the package"""
+    clean()
+    wheel()
+    environ['PYTHONPATH']=environ['PYTHONPATH'].replace(getcwd(),'').replace('::',':').strip(':')
+    print(environ['PYTHONPATH'],getcwd())
+    file=listdir('dist')[0]
+    name=file[0:file.index('-')].replace('_','-')
+    run([executable,'-m','pip','uninstall','-y',name],check=True)
+    run([executable,'-m','pip','install',join('dist',file)],check=True)
+    clean()
 
 @command('clean')
 def clean():
