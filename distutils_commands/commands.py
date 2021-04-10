@@ -11,8 +11,8 @@ def local_install():
     """Locally install the package"""
     clean()
     wheel()
-    environ['PYTHONPATH']=environ['PYTHONPATH'].replace(getcwd(),'').replace('::',':').strip(':')
-    print(environ['PYTHONPATH'],getcwd())
+    if 'PYTHONPATH' in environ:
+        environ['PYTHONPATH']=environ['PYTHONPATH'].replace(getcwd(),'').replace('::',':').strip(':')
     file=listdir('dist')[0]
     name=file[0:file.index('-')].replace('_','-')
     run([executable,'-m','pip','uninstall','-y',name],check=True)
@@ -49,10 +49,11 @@ def pdoc(module:str,docformat:str='google',output_dir:str='docs'):
 def pytest(file:str):
     """run tests with pytest"""
     try:
-        from pytest import main as pytest_main
+        from pytest import main as pytest_main,ExitCode
     except ImportError:
         raise import_exception('pytest')
-    pytest_main([file])
+    if pytest_main([file])!=ExitCode.OK:
+        raise Exception('Test failed')
 
 @command('wheel')
 def wheel():
