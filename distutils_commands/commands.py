@@ -122,4 +122,4 @@ def publish_pypi(test:bool=False,version:str=''):
 
 def import_exception(name:str)->ImportError:
     return ImportError(f'{name} extension dependencies not installed, '
-                       f'you can install it with "pip install linux-commands[{name}]"')
+                       f'you can install it with "pip install distutils-commands[{name}]"')
